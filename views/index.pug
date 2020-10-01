@@ -55,8 +55,6 @@
 <script src="/socket.io/socket.io.js"></script>
 script.
     $(function () {
-        // console.log(#{originSocketId});
-
         var FADE_TIME = 150; // ms
         var TYPING_TIMER_LENGTH = 400; // ms
         var COLORS = [
@@ -152,7 +150,7 @@ script.
                 .text(data.username)
                 .css('color', getUsernameColor(data.username));
 
-            var firstWord, toSocketId, recipient, message;
+            var firstWord, toSocketId, recipient, message, $messageBodyDiv, filesNotif;
             firstWord = data.message.split(" ")[0];
             if (firstWord.match(/\/to:.*/i) !== null) {
                 message = data.message.substr(1 + firstWord.length);
@@ -168,8 +166,15 @@ script.
             } else {
                 message = data.message;
             }
-            var $messageBodyDiv = $('<span class="messageBody">')
-                .text(message);
+
+            if (data.file) {
+                var blobData = new Blob([data.file], {type: "octet/stream"});
+                var url = window.URL.createObjectURL(blobData);
+                filesNotif = 'sent file ' + '<a href="' + url + '" download="' + data.fileName + '">' + data.fileName + '</a>';
+                $messageBodyDiv = $('<span class="messageBody">').html(filesNotif);
+            } else {
+                $messageBodyDiv = $('<span class="messageBody">').text(message);
+            }
 
             var typingClass = data.typing ? 'typing' : '';
             var $messageDiv = $('<li class="message"/>')
@@ -379,9 +384,20 @@ script.
                 $('#onlineUsers').modal('hide');
                 $('.inputMessage').focus();
                 $('.inputMessage').val('/to:' + $(this).data('socketid') + ' ');
-                // console.log(hehe);
             });
         };
+
+        $('.inputFile').change(function () {
+            let fileList = this.files;
+            if (fileList.length) {
+                socket.emit('send file', {fileName: fileList[0].name, file: fileList[0]});
+                $(this).val(null);
+            }
+        });
+
+        socket.on('send file', (data) => {
+            addChatMessage(data);
+        });
     });
 </body>
 </html>

@@ -40,6 +40,16 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('send file', (data) => {
+        socket.broadcast.emit('send file', {
+            username: socket.username,
+            message: '',
+            fileName: data.fileName,
+            file: data.file,
+            isPrivate: false
+        });
+    });
+
     // when the client emits 'add user', this listens and executes
     socket.on('add user', (username) => {
         if (addedUser) return;

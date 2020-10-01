@@ -116,7 +116,7 @@ ul {
 
 .chatArea {
     height: 100%;
-    padding-bottom: 60px;
+    padding-bottom: 90px;
 }
 
 .messages {
@@ -146,6 +146,15 @@ ul {
     left: 0;
     outline: none;
     padding-left: 10px;
+    position: absolute;
+    right: 0;
+    width: 100%;
+}
+
+.inputFile {
+    bottom: 60px;
+    height: 30px;
+    left: 0;
     position: absolute;
     right: 0;
     width: 100%;
